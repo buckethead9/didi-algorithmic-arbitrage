@@ -2,7 +2,7 @@
 
 ## Periodo: 5 Dic 2025 - 25 Ene 2026 (24 días operativos)
 
-![Análisis de la Paradoja de Eficiencia](Eficiencia entrega vs utilidad.png)
+![Grafica de Eficiencia](Eficiencia%20entrega%20vs%20utilidad.png)
 
 ---
 
