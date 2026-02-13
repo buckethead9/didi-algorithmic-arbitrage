@@ -6,7 +6,7 @@
 
 ## 🧠 Tesis del Proyecto
 
-Este repositorio actúa como un **exoesqueleto mental** para auditar el "Arbitraje Algorítmico". La hipótesis confirmada es que el algoritmo de ruteo de la plataforma (diseñado para vehículos motorizados) sobreestima las distancias en entornos urbanos densos, permitiendo que un operador en bicicleta genere kilómetros "fantasma" mediante el uso de atajos e infraestructura no motorizada.
+Este repositorio actúa como un **amplificador cognitivo** para auditar el "Arbitraje Algorítmico". La hipótesis confirmada es que el algoritmo de ruteo de la plataforma (diseñado para vehículos motorizados) sobreestima las distancias en entornos urbanos densos, permitiendo que un operador en bicicleta genere kilómetros "fantasma" mediante el uso de atajos e infraestructura no motorizada.
 
 ---
 
@@ -117,7 +117,7 @@ MySQL 8.0+
 
 ```bash
 # 1. Clonar repositorio
-git clone https://github.com/tu-usuario/didi-algorithmic-arbitrage.git
+git clone https://github.com/buckethead9/didi-algorithmic-arbitrage.git
 cd didi-algorithmic-arbitrage
 
 # 2. Instalar dependencias
