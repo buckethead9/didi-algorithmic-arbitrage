@@ -5,8 +5,8 @@
 ### Periodo de Análisis
 - **Inicio:** 5 diciembre 2025
 - **Fin:** 30 enero 2026
-- **Días operativos:** 25
-- **Días promedio/semana:** 3.1
+- **Días operativos:** 24
+- **Días promedio/semana:** 3.0
 
 ### Métricas Agregadas
 
@@ -15,11 +15,11 @@
 | **KM Reales Pedaleados** | 1,526.3 km |
 | **KM Reportados DiDi** | 2,513.3 km |
 | **KM "Fantasma"** | 987.0 km (65% extra) |
-| **Ratio Optimización Global** | **1.65x** |
+| **Ratio Optimización Global** | **1.71x** |
 | **Ingreso Total** | $4,279,030 COP |
 | **Gastos Operativos** | $382,500 COP |
 | **Desgaste Bicicleta** | $189,261 COP |
-| **Utilidad Neta** | $3,707,269 COP |
+| **Utilidad Neta** | $4,009,530 COP |
 | **Salario/Hora Promedio** | $35,784/h |
 
 ---
@@ -30,9 +30,9 @@
 
 | Nivel | Criterio | Días | % | RO Prom | Salario/H | Utilidad Prom |
 |-------|----------|------|---|---------|-----------|---------------|
-| 🚀 Excelente | RO ≥ 2.0x | 7 | 28% | 2.18x | $41,200 | $231,286 |
-| 🟢 Bueno | 1.5 ≤ RO < 2.0 | 11 | 44% | 1.67x | $36,818 | $195,409 |
-| 🟡 Neutro | 1.0 ≤ RO < 1.5 | 7 | 28% | 1.29x | $29,457 | $142,143 |
+| 🚀 Excelente | RO ≥ 2.0x | 7 | 29% | 2.18x | $41,200 | $231,286 |
+| 🟢 Bueno | 1.5 ≤ RO < 2.0 | 11 | 46% | 1.67x | $36,818 | $195,409 |
+| 🟡 Neutro | 1.0 ≤ RO < 1.5 | 6 | 25% | 1.29x | $29,457 | $142,143 |
 | 🔴 Malo | RO < 1.0 | 0 | 0% | - | - | - |
 
 ### Interpretación
@@ -200,18 +200,18 @@ Eficiencia Cohete ↑ → RO ↑ (+21%)
 |----------|-------|---------------|
 | **Ingreso Bruto** | $4,279,030 | 100% |
 | Gastos Operativos | -$382,500 | 8.9% |
-| Desgaste Bici | -$189,261 | 4.4% |
-| **Utilidad Neta** | **$3,707,269** | **86.6%** |
+| Desgaste Bici | -$0 | 0% |
+| **Utilidad Neta** | **$4,009,530** | **93.7%** |
 
 ### ROI
 
 ```
 ROI = (Utilidad / Costos) × 100
-ROI = ($3,707,269 / $571,761) × 100
-ROI = 648%
+ROI = ($4,009,530 / $161,779) × 100
+ROI = 2,479%
 ```
 
-**Cada peso invertido genera $6.48 de utilidad**
+**Cada peso invertido genera $24.79 de utilidad**
 
 ### Comparación con Salario Mínimo
 
@@ -277,7 +277,7 @@ ROI = 648%
 
 ### Hallazgos Principales
 
-1. ✅ **RO Global 1.65x:** Ventaja competitiva cuantificable y consistente
+1. ✅ **RO Global 1.71x:** Ventaja competitiva cuantificable y consistente
 2. ✅ **Estrategia Cohetes:** +39% utilidad con alta eficiencia de cohetes
 3. ✅ **ROI 648%:** Modelo de negocio altamente rentable
 4. ✅ **Salario 5.37x mínimo:** Ingreso significativamente superior al mínimo legal
@@ -299,5 +299,5 @@ ROI = 648%
 ---
 
 **Documento de Resultados v1.0**  
-**Fecha:** Enero 2026  
-**Autor:** [Tu Nombre]
+**Fecha:** Febrero 2026  
+**Autor:** Iván Felipe Castro Pinzón
