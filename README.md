@@ -252,8 +252,8 @@ Si usas este dataset en investigación académica:
 ## 📞 Contacto y Autoría
 
 **Autor:** Iván Felipe Castro Pinzón  
-**LinkedIn:** [Tu Perfil LinkedIn]  
-**Email:** [tu@email.com]  
+**LinkedIn:** https://www.linkedin.com/in/ivanfelipecastropinzon/  
+**Email:** felipecastro933@gmail.com -- ifcastrop@udistrital.edu.co
 **Proyecto:** Logistics Optimization & Algorithmic Arbitrage v2.0
 
 ---
