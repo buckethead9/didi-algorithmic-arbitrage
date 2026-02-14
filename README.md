@@ -138,6 +138,7 @@ didi-algorithmic-arbitrage/
     ├── DICCIONARIO_VARIABLES.md     # 22 variables (9 primarias, 13 derivadas)
     ├── METODOLOGIA.md               # Protocolo de recolección y auditoría
     ├── RESULTADOS.md                # 10 tablas de análisis
+    ├── RESUMEN EJECUTIVO.md         # Correcciones aplicadas y validaciones realizadas.
     └── CORRECCION_AUDITORIA.md      # Ajustes de métricas financieras
 ```
 
