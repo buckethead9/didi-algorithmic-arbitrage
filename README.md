@@ -120,7 +120,7 @@ Este proyecto es un **exoesqueleto mental** para la toma de decisiones basada en
 ## 📁 ESTRUCTURA DEL REPOSITORIO
 
 ```
-pipeline_didi/
+didi-algorithmic-arbitrage/
 │
 ├── main.py                          # Script de ingesta y procesamiento
 ├── README.md                        # Este archivo (Arquitectura)
