@@ -1,445 +1,371 @@
-# 📖 Diccionario de Variables
+# DICCIONARIO DE VARIABLES
+## Pipeline de Auditoría - Arbitraje Algorítmico DiDi Food
 
-## Análisis McKinsey: Arbitraje Algorítmico en Logística Última Milla
-
-**Versión:** 1.0  
-**Fecha:** Enero 2026  
-**Dataset:** 24 días operativos (2025-12-05 a 2026-01-30)
+**Versión:** 1.0.0  
+**Dataset:** didi_analisis_12_01.csv  
+**N:** 26 registros  
+**Periodo:** 2025-12-05 a 2026-01-31
 
 ---
 
-## 🎯 Variables Primarias (Recolectadas)
+## PRINCIPIO DE INMUTABILIDAD
+
+> Una vez definida una variable en este diccionario, debe usarse con el mismo nombre y fórmula en los otros 4 documentos (main.py, README.md, METODOLOGIA.md, RESULTADOS.md, ANALISIS_SQL_FINAL.sql).
+
+---
+
+## VARIABLES PRIMARIAS (9)
 
 ### 1. `fecha`
-**Tipo:** Cualitativa nominal  
-**Formato:** DATE (YYYY-MM-DD)  
-**Ejemplo:** 2025-12-05  
-**Definición:** Fecha del día operativo  
-**Fuente:** Calendario  
-**Rango:** 2025-12-05 a 2026-01-30  
-**Valores únicos:** 24``
+**Tipo:** DATE  
+**Descripción:** Fecha del día operativo en formato ISO 8601  
+**Formato:** YYYY-MM-DD  
+**Ejemplo:** `2025-12-05`  
+**Fuente:** Registro manual del operador
 
 ---
 
 ### 2. `h_inicio`
-**Tipo:** Cuantitativa continua  
-**Formato:** TIME (HH:MM)  
-**Ejemplo:** 17:05  
-**Definición:** Hora exacta en que se acepta el **primer pedido** del día  
-**Fuente:** App DiDi (timestamp al aceptar pedido)  
-**Rango observado:** 11:36 - 18:47  
-**Notas:** 
-- No es la hora de salida de casa
-- Es el momento exacto del primer "Aceptar"
-- Formato 24 horas
+**Tipo:** TIME  
+**Descripción:** Hora de inicio del turno  
+**Formato:** HH:MM (24 horas)  
+**Ejemplo:** `17:05`  
+**Fuente:** Timestamp de activación en DiDi App  
+**Nota:** Puede ser en la mañana, tarde o noche
 
 ---
 
 ### 3. `h_fin`
-**Tipo:** Cuantitativa continua  
-**Formato:** TIME (HH:MM)  
-**Ejemplo:** 23:23  
-**Definición:** Hora exacta en que se entrega el **último pedido** y se pone el candado a la bicicleta en casa  
-**Fuente:** App DiDi + registro manual  
-**Rango observado:** 18:15 - 23:56  
-**Notas:**
-- Marca el fin del turno completo
-- Incluye el desplazamiento de regreso a casa
+**Tipo:** TIME  
+**Descripción:** Hora de finalización del turno  
+**Formato:** HH:MM (24 horas)  
+**Ejemplo:** `23:23` o `0:12` (si cruza medianoche)  
+**Fuente:** Timestamp de desactivación en DiDi App  
+**Crítico:** Si `h_fin < h_inicio`, el turno cruzó la medianoche
 
 ---
 
-### 4. `km_google_maps`
-**Tipo:** Cuantitativa continua  
-**Formato:** DECIMAL(10,2)  
+### 4. `km_google`
+**Tipo:** DECIMAL(8,2)  
+**Descripción:** Distancia total recorrida según Google Maps (ciclorrutas)  
 **Unidad:** Kilómetros (km)  
-**Ejemplo:** 45.06  
-**Definición:** Distancia **real pedaleada** según GPS  
-**Fuente:** Google Maps Timeline o Strava  
-**Rango observado:** 11.16 - 104.61 km  
-**Promedio:** 63.6 km/día  
-**Notas:**
-- Incluye retornos y desplazamientos entre pedidos
-- Medición GPS con precisión ±5% en zona urbana
-- Es la **distancia física real** recorrida
-- **Variable clave para calcular RO**
+**Ejemplo:** `45.06`  
+**Fuente:** Google Maps API con modo "bicicleta"  
+**Limpieza:** `"45,06 km"` → `45.06`
 
 ---
 
-### 5. `km_didi_app`
-**Tipo:** Cuantitativa continua  
-**Formato:** DECIMAL(10,2)  
+### 5. `km_didi`
+**Tipo:** DECIMAL(8,2)  
+**Descripción:** Distancia total recorrida según DiDi App (rutas motorizadas)  
 **Unidad:** Kilómetros (km)  
-**Ejemplo:** 88.60  
-**Definición:** Suma de las distancias **reportadas por DiDi** en cada pedido  
-**Fuente:** App DiDi (captura de pantalla de cada pedido)  
-**Rango observado:** 17.70 - 146.80 km  
-**Promedio:** 100.53 km/día  
-**Notas:**
-- Basada en cálculo algorítmico de rutas vehiculares
-- **NO refleja la distancia real pedaleada**
-- Es la distancia que DiDi usa para calcular el pago
-- **Variable clave para calcular RO**
+**Ejemplo:** `88.6`  
+**Fuente:** DiDi App (cálculo interno de la plataforma)  
+**Limpieza:** `"88,6 km"` → `88.6`
 
 ---
 
-### 6. `ingreso_bruto`
-**Tipo:** Cuantitativa continua  
-**Formato:** DECIMAL(10,2)  
-**Unidad:** Pesos colombianos (COP)  
-**Ejemplo:** 130000  
-**Definición:** Ganancia total garantizada del día (ingreso base + complementos + bonos)  
-**Fuente:** App DiDi (resumen diario)  
-**Rango observado:** $31,000 - $302,000  
-**Promedio:** $171,161/día  
-**Componentes:**
-- Ingreso base (tarifa por km/pedido)
-- Complementos (bonos por eficiencia)
-- Propinas (si aplican)
-**Notas:**
-- Es el monto **antes** de descontar gastos
-- Incluye todos los incentivos del día
+### 6. `garantizado_meta`
+**Tipo:** INTEGER  
+**Descripción:** Ingreso total garantizado por DiDi al cumplir la meta del turno  
+**Unidad:** Pesos Colombianos (COP)  
+**Ejemplo:** `130000`  
+**Fórmula:** `ingreso_base + complemento_bono`  
+**Fuente:** Plataforma DiDi
 
 ---
 
-### 7. `pedidos_cohete`
-**Tipo:** Cuantitativa discreta  
-**Formato:** INT  
-**Unidad:** Número de pedidos  
-**Ejemplo:** 11  
-**Definición:** Cantidad de pedidos con distancia **≥ 7 km** (cuentan doble para meta semanal)  
-**Fuente:** Contador manual durante el día  
-**Rango observado:** 0 - 18 pedidos  
-**Promedio:** 10.8 cohetes/día  
-**Criterio:** Pedido se clasifica como "cohete" si DiDi muestra distancia ≥7.0 km  
-**Notas:**
-- Estos pedidos cuentan **x2** para metas semanales de DiDi
-- Generalmente pagan más por km
-- Requieren más esfuerzo físico
+### 7. `ingreso_base`
+**Tipo:** INTEGER  
+**Descripción:** Ingreso base por pedidos completados (sin bonos)  
+**Unidad:** COP  
+**Ejemplo:** `66676`  
+**Fuente:** Plataforma DiDi
 
 ---
 
-### 8. `pedidos_normales`
-**Tipo:** Cuantitativa discreta  
-**Formato:** INT  
-**Unidad:** Número de pedidos  
-**Ejemplo:** 1  
-**Definición:** Cantidad de pedidos con distancia **< 7 km**  
-**Fuente:** Calculado (pedidos_fisicos - pedidos_cohete)  
-**Rango observado:** 0 - 9 pedidos  
-**Promedio:** 3.3 normales/día  
-**Notas:**
-- Representan volumen complementario
-- Menor pago por km que cohetes
-- Menor esfuerzo físico
+### 8. `complemento_bono`
+**Tipo:** INTEGER  
+**Descripción:** Bono adicional al cumplir la meta de pedidos  
+**Unidad:** COP  
+**Ejemplo:** `63324`  
+**Fuente:** Plataforma DiDi  
+**Fórmula:** `garantizado_meta - ingreso_base`
 
 ---
 
-### 9. `gasto_extra`
-**Tipo:** Cuantitativa continua  
-**Formato:** DECIMAL(10,2)  
-**Unidad:** Pesos colombianos (COP)  
-**Ejemplo:** 17000  
-**Definición:** Gastos operativos del día (comida, bebidas, reparaciones)  
-**Fuente:** Recibos físicos sumados  
-**Rango observado:** $0 - $58,000  
-**Promedio:** $15,300/día  
-**Componentes:**
-- Alimentación extra (Gatorade, snacks, almuerzo en ruta)
-- Reparaciones de emergencia (pinchazo, parches)
-- Otros gastos operativos
-**Notas:**
-- **NO incluye** comida que se consumiría en casa de todos modos
-- Solo gastos **adicionales** por la operación
-- Algunos días = $0 (turno sin gastos)
+### 9. `pedidos_fisicos`
+**Tipo:** INTEGER  
+**Descripción:** Número de pedidos completados y entregados  
+**Unidad:** Pedidos  
+**Ejemplo:** `12`  
+**Fuente:** Conteo manual del operador  
+**Nota:** Incluye pedidos cancelados después de recoger
 
 ---
 
-## 📊 Variables Derivadas (Calculadas por SQL)
+### 10. `unidades_progreso`
+**Tipo:** INTEGER  
+**Descripción:** Unidades de progreso contabilizadas por DiDi para cumplir la meta  
+**Unidad:** Unidades  
+**Ejemplo:** `11`  
+**Fuente:** DiDi App  
+**Nota:** Puede ser menor que `pedidos_fisicos` si DiDi no contabilizó algunos pedidos
 
-### 10. `tiempo_total_horas`
-**Tipo:** Cuantitativa continua  
-**Formato:** DECIMAL(5,2)  
+---
+
+### 11. `gastos_operativos`
+**Tipo:** INTEGER  
+**Descripción:** Gastos totales del turno (combustible, mantenimiento, alquiler de moto, etc.)  
+**Unidad:** COP  
+**Ejemplo:** `17000`  
+**Fuente:** Registro manual del operador  
+**Crítico:** Algunos días tienen `$0` (anomalía técnica)
+
+---
+
+## VARIABLES DERIVADAS (13)
+
+### 12. `duracion_horas`
+**Tipo:** DECIMAL(5,2)  
+**Descripción:** Duración total del turno en horas  
 **Unidad:** Horas  
-**Fórmula:** `TIMESTAMPDIFF(MINUTE, h_inicio, h_fin) / 60`  
-**Ejemplo:** 6.30 horas  
-**Definición:** Duración total del turno desde primer pedido hasta llegar a casa  
-**Rango observado:** 3.61 - 11.72 horas  
-**Promedio:** 9.12 horas/día  
-**Notas:**
-- Incluye tiempo de espera entre pedidos
-- Incluye desplazamientos vacíos
-- Incluye retorno a casa
-
----
-
-### 11. `pedidos_totales`
-**Tipo:** Cuantitativa discreta  
-**Formato:** INT  
-**Fórmula:** `pedidos_cohete + pedidos_normales`  
-**Ejemplo:** 12  
-**Definición:** Total de pedidos entregados en el día  
-**Rango observado:** 3 - 21 pedidos  
-**Promedio:** 14.1 pedidos/día  
-
----
-
-### 12. `ratio_optimizacion` (RO) ⭐
-**Tipo:** Cuantitativa continua  
-**Formato:** DECIMAL(5,2)  
-**Fórmula:** `km_didi_app / km_google_maps`  
-**Ejemplo:** 1.97  
-**Definición:** **Factor de multiplicación algorítmica** - Cuántos km paga DiDi por cada km real pedaleado  
-**Rango observado:** 1.29 - 1.99x  
-**Promedio:** **1.71x**  
-**Interpretación:**
-- **RO > 2.0:** 🚀 Excelente (hackeo máximo del algoritmo)
-- **RO 1.5-2.0:** 🟢 Bueno (ventaja competitiva)
-- **RO 1.0-1.5:** 🟡 Neutro (casi como un carro)
-- **RO < 1.0:** 🔴 Malo (trabajas para la app)
-**Notas:**
-- **Métrica central del análisis McKinsey**
-- Cuantifica el arbitraje algorítmico
-- Mayor RO = Mayor aprovechamiento de atajos
+**Fórmula:**  
+```python
+def calcular_duracion_turno(h_inicio, h_fin):
+    minutos_inicio = h_inicio.hora * 60 + h_inicio.minutos
+    minutos_fin = h_fin.hora * 60 + h_fin.minutos
+    
+    # Tratamiento de medianoche
+    if minutos_fin < minutos_inicio:
+        minutos_fin += 1440  # +24 horas
+    
+    duracion_minutos = minutos_fin - minutos_inicio
+    return duracion_minutos / 60.0
+```
+**Ejemplo:** `17:01 a 0:12` → `7.18 horas` (no `6.18`)  
+**Crítico:** El "Día Operativo" es una unidad, sin fragmentar turnos
 
 ---
 
 ### 13. `utilidad_neta`
-**Tipo:** Cuantitativa continua  
-**Formato:** DECIMAL(10,2)  
+**Tipo:** INTEGER  
+**Descripción:** Ganancia neta después de gastos  
 **Unidad:** COP  
-**Fórmula:** `ingreso_bruto - gasto_extra - (km_google_maps × 124)`  
-**Ejemplo:** $107,456  
-**Definición:** Ganancia real después de descontar gastos operativos y desgaste de bicicleta  
-**Rango observado:** $25,133 - $282,256  
-**Promedio:** $148,291/día  
-**Componentes:**
-- Ingreso bruto
-- **-** Gastos operativos
-- **-** Desgaste bici ($124/km)
-**Notas:**
-- Desgaste incluye: llantas, cadena, frenos, depreciación
-- $124/km basado en costo de consumibles y vida útil
+**Fórmula:**  
+```python
+utilidad_neta = garantizado_meta - gastos_operativos
+```
+**Ejemplo:** `130000 - 17000 = 113000`
 
 ---
 
-### 14. `ingreso_por_km_real`
-**Tipo:** Cuantitativa continua  
-**Formato:** DECIMAL(8,2)  
+### 14. `km_por_pedido_google`
+**Tipo:** DECIMAL(5,2)  
+**Descripción:** Distancia promedio por pedido según Google Maps  
+**Unidad:** km/pedido  
+**Fórmula:**  
+```python
+km_por_pedido_google = km_google / pedidos_fisicos
+```
+**Ejemplo:** `45.06 / 12 = 3.76 km/pedido`
+
+---
+
+### 15. `km_por_pedido_didi`
+**Tipo:** DECIMAL(5,2)  
+**Descripción:** Distancia promedio por pedido según DiDi App  
+**Unidad:** km/pedido  
+**Fórmula:**  
+```python
+km_por_pedido_didi = km_didi / pedidos_fisicos
+```
+**Ejemplo:** `88.6 / 12 = 7.38 km/pedido`
+
+---
+
+### 16. `ratio_optimizacion` (RO)
+**Tipo:** DECIMAL(4,2)  
+**Descripción:** Ratio de eficiencia de distancia (asimetría algorítmica)  
+**Unidad:** Factor multiplicador (x)  
+**Fórmula:**  
+```python
+ratio_optimizacion = km_didi / km_google
+```
+**Ejemplo:** `88.6 / 45.06 = 1.97x`  
+**Interpretación:** DiDi calcula rutas 97% más largas que Google Maps  
+**Uso exclusivo:** Eficiencia de distancia física  
+**NO confundir con:** Múltiplo de Ingreso (variable financiera)
+
+---
+
+### 17. `ingreso_por_km_google`
+**Tipo:** DECIMAL(8,2)  
+**Descripción:** Ingreso por kilómetro recorrido según Google Maps  
 **Unidad:** COP/km  
-**Fórmula:** `(ingreso_bruto - gasto_extra) / km_google_maps`  
-**Ejemplo:** $2,355/km  
-**Definición:** Ingreso neto por cada kilómetro realmente pedaleado  
-**Rango observado:** $1,845 - $4,038 COP/km  
-**Promedio:** $2,554/km  
-**Interpretación:**
-- Mayor valor = Mayor rentabilidad por esfuerzo
-- Afectado por RO y eficiencia de cohetes
+**Fórmula:**  
+```python
+ingreso_por_km_google = garantizado_meta / km_google
+```
+**Ejemplo:** `130000 / 45.06 = 2885.04 COP/km`
 
 ---
 
-### 15. `velocidad_enganche`
-**Tipo:** Cuantitativa continua  
-**Formato:** DECIMAL(5,1)  
-**Unidad:** Minutos/pedido  
-**Fórmula:** `tiempo_total_horas × 60 / pedidos_totales`  
-**Ejemplo:** 31.5 min/pedido  
-**Definición:** Tiempo promedio que toma completar un pedido (incluyendo esperas)  
-**Rango observado:** 19.9 - 73.7 min/pedido  
-**Promedio:** 38.9 min/pedido  
-**Interpretación:**
-- <30 min/pedido: Alta productividad
-- 30-40 min/pedido: Rango normal
-- >40 min/pedido: Mucha espera entre pedidos
-**Notas:**
-- Incluye tiempo de espera de nuevos pedidos
-- Incluye desplazamiento + entrega + retorno
+### 18. `ingreso_por_km_didi`
+**Tipo:** DECIMAL(8,2)  
+**Descripción:** Ingreso por kilómetro recorrido según DiDi App  
+**Unidad:** COP/km  
+**Fórmula:**  
+```python
+ingreso_por_km_didi = garantizado_meta / km_didi
+```
+**Ejemplo:** `130000 / 88.6 = 1467.27 COP/km`
 
 ---
 
-### 16. `velocidad_operativa`
-**Tipo:** Cuantitativa continua  
-**Formato:** DECIMAL(5,2)  
-**Unidad:** km/h  
-**Fórmula:** `km_google_maps / tiempo_total_horas`  
-**Ejemplo:** 7.15 km/h  
-**Definición:** Velocidad promedio real considerando todo el tiempo del turno  
-**Rango observado:** 4.56 - 10.39 km/h  
-**Promedio:** 6.69 km/h  
-**Notas:**
-- Incluye paradas, esperas, entregas
-- **NO** es velocidad de pedaleo puro
-- Diferente de velocidad en movimiento (mayor)
-
----
-
-### 17. `salario_efectivo_hora`
-**Tipo:** Cuantitativa continua  
-**Formato:** DECIMAL(8,2)  
+### 19. `ingreso_por_hora`
+**Tipo:** DECIMAL(8,2)  
+**Descripción:** Ingreso promedio por hora trabajada  
 **Unidad:** COP/hora  
-**Fórmula:** `utilidad_neta / tiempo_total_horas`  
-**Ejemplo:** $17,056/h  
-**Definición:** Ganancia neta por hora de trabajo  
-**Rango observado:** $9,657 - $52,340 COP/h  
-**Promedio:** $16,256/h  
-**Referencia:** Salario mínimo 2026 = $6,667/h  
-**Promedio vs mínimo:** 2.44x (144% superior)  
-**Interpretación:**
-- <$10,000/h: Día poco rentable
-- $10-20,000/h: Rentabilidad normal
-- $20-30,000/h: Buen día
-- >$30,000/h: Excelente día
-**Notas:**
-- **Métrica clave** para evaluar rentabilidad
-- Comparable con otros trabajos
+**Fórmula:**  
+```python
+ingreso_por_hora = garantizado_meta / duracion_horas
+```
+**Ejemplo:** `130000 / 6.3 = 20634.92 COP/hora`
 
 ---
 
-### 18. `eficiencia_cohete_pct`
-**Tipo:** Cuantitativa continua  
-**Formato:** DECIMAL(5,2)  
+### 20. `utilidad_por_hora`
+**Tipo:** DECIMAL(8,2)  
+**Descripción:** Utilidad neta promedio por hora trabajada  
+**Unidad:** COP/hora  
+**Fórmula:**  
+```python
+utilidad_por_hora = utilidad_neta / duracion_horas
+```
+**Ejemplo:** `113000 / 6.3 = 17936.51 COP/hora`
+
+---
+
+### 21. `eficiencia_cumplimiento`
+**Tipo:** DECIMAL(4,2)  
+**Descripción:** Proporción de pedidos contabilizados por DiDi vs pedidos físicos  
+**Unidad:** Factor (0 a 1)  
+**Fórmula:**  
+```python
+eficiencia_cumplimiento = unidades_progreso / pedidos_fisicos
+```
+**Ejemplo:** `11 / 12 = 0.92`  
+**Interpretación:**  
+- `1.0` = DiDi contabilizó todos los pedidos
+- `< 1.0` = Algunos pedidos no fueron contabilizados
+- `> 1.0` = DiDi contabilizó más unidades (bonos especiales)
+
+---
+
+### 22. `proporcion_bono`
+**Tipo:** DECIMAL(4,2)  
+**Descripción:** Proporción del ingreso que proviene de bonos  
+**Unidad:** Factor (0 a 1)  
+**Fórmula:**  
+```python
+proporcion_bono = complemento_bono / garantizado_meta
+```
+**Ejemplo:** `63324 / 130000 = 0.49` (49%)
+
+---
+
+### 23. `roi_diario`
+**Tipo:** DECIMAL(8,2)  
+**Descripción:** Retorno de Inversión del día  
 **Unidad:** Porcentaje (%)  
-**Fórmula:** `(pedidos_cohete / pedidos_totales) × 100`  
-**Ejemplo:** 91.67%  
-**Definición:** Porcentaje de pedidos cohete sobre el total  
-**Rango observado:** 0.0% - 100.0%  
-**Promedio:** 76.6%  
-**Interpretación:**
-- ≥80%: Muy alta eficiencia
-- 60-79%: Alta eficiencia
-- 40-59%: Eficiencia media
-- <40%: Baja eficiencia
-**Correlación con utilidad:** r = +0.51 (moderada positiva)
+**Fórmula:**  
+```python
+if gastos_operativos > 0:
+    roi_diario = (utilidad_neta / gastos_operativos) * 100
+else:
+    roi_diario = NaN  # No calculable
+```
+**Ejemplo:** `(113000 / 17000) * 100 = 664.71%`  
+**Crítico:** Solo calculable si `gastos_operativos > 0`
 
 ---
 
-## 📈 Variables de Clasificación
-
-### 19. `nivel_ro`
-**Tipo:** Cualitativa ordinal  
-**Valores:** 
-- 🚀 Excelente (RO ≥ 2.0)
-- 🟢 Bueno (1.5 ≤ RO < 2.0)
-- 🟡 Neutro (1.0 ≤ RO < 1.5)
-- 🔴 Malo (RO < 1.0)
-**Definición:** Clasificación del día según Ratio de Optimización  
-**Distribución observada:**
-- Excelente: 7 días (28%)
-- Bueno: 11 días (44%)
-- Neutro: 7 días (28%)
-- Malo: 0 días (0%)
+### 24. `rentabilidad_binaria`
+**Tipo:** BOOLEAN (0 o 1)  
+**Descripción:** Indicador de éxito financiero del día  
+**Fórmula:**  
+```python
+rentabilidad_binaria = 1 if utilidad_neta > 0 else 0
+```
+**Interpretación:**  
+- `1` = Día rentable
+- `0` = Día con pérdidas
 
 ---
 
-### 20. `nivel_cohetes`
-**Tipo:** Cualitativa ordinal  
-**Valores:**
-- ≥80% cohetes
-- 60-79% cohetes
-- 40-59% cohetes
-- <40% cohetes
-**Definición:** Clasificación del día según proporción de pedidos cohete  
-**Distribución observada:**
-- ≥80%: 15 días (60%)
-- 60-79%: 6 días (24%)
-- 40-59%: 2 días (8%)
-- <40%: 2 días (8%)
+## MÉTRICAS GLOBALES (AGREGADAS)
+
+### `total_ingresos`
+**Fórmula:** `SUM(garantizado_meta)`  
+**Valor Auditado:** `$4,440,530 COP`
+
+### `total_gastos`
+**Fórmula:** `SUM(gastos_operativos)`  
+**Valor Auditado:** `$431,000 COP`
+
+### `utilidad_neta_global`
+**Fórmula:** `total_ingresos - total_gastos`  
+**Valor:** `$4,009,530 COP`
+
+### `roi_global`
+**Fórmula:** `(utilidad_neta_global / total_gastos) * 100`  
+**Valor:** `930.28%`
+
+### `ro_global`
+**Fórmula:** `SUM(km_didi) / SUM(km_google)`  
+**Valor:** `1.66x`  
+**Interpretación:** En promedio, DiDi calcula rutas 66% más largas
+
+### `multiplo_ingreso`
+**Fórmula:** `total_ingresos / total_gastos`  
+**Valor:** `10.30x`  
+**Interpretación:** Cada peso invertido genera $10.30 COP de ingresos
 
 ---
 
-## 🔢 Variables Agregadas (Por Periodo)
+## DIFERENCIACIÓN SEMÁNTICA DE RATIOS
 
-### 21. Variables de resumen mensual
-- `dias_trabajados`: Días operativos en el mes
-- `km_reales_mes`: Total km pedaleados en el mes
-- `km_didi_mes`: Total km reportados en el mes
-- `ro_mensual`: RO promedio del mes
-- `utilidad_mensual`: Utilidad neta total del mes
+### ⚠️ ADVERTENCIA CRÍTICA
 
-### 22. Variables de resumen semanal
-- `semana`: Número de semana del año
-- `dias_semana`: Días trabajados en la semana
-- `ro_semanal`: RO promedio semanal
-- `utilidad_semanal`: Utilidad total de la semana
+**NO confundir estas dos métricas:**
 
----
+| Métrica | Uso | Fórmula | Valor |
+|---------|-----|---------|-------|
+| **RO (Ratio de Optimización)** | Eficiencia de distancia física | `km_didi / km_google` | **1.66x** |
+| **Múltiplo de Ingreso** | Relación financiera | `Ingresos / Gastos` | **10.30x** |
 
-## 📊 Constantes del Modelo
-
-### Parámetros Fijos
-
-| Constante | Valor | Justificación |
-|-----------|-------|---------------|
-| **Desgaste bici** | $124/km | Costo promedio de llantas, cadena, frenos, depreciación |
-| **Salario mínimo 2026** | $6,667/h | Salario mínimo legal Colombia 2026 |
-| **Criterio cohete** | ≥7 km | Definición de DiDi para pedidos largos |
-| **Factor cohete meta** | 2x | Pedidos cohete cuentan doble para meta semanal |
+**RO** mide cuánto más larga es la ruta de DiDi vs Google Maps.  
+**Múltiplo de Ingreso** mide cuántos pesos generas por cada peso invertido.
 
 ---
 
-## 🔗 Relaciones Entre Variables
+## ANOMALÍAS DOCUMENTADAS
 
-### Correlaciones Principales (Pearson)
-
-| Variable A | Variable B | r | Interpretación |
-|------------|------------|---|----------------|
-| `ratio_optimizacion` | `salario_efectivo_hora` | +0.41 | Moderada positiva |
-| `eficiencia_cohete_pct` | `utilidad_neta` | +0.51 | Moderada positiva |
-| `utilidad_neta` | `salario_efectivo_hora` | +0.89 | Fuerte positiva |
-| `km_google_maps` | `ratio_optimizacion` | -0.12 | Débil negativa |
+1. **Días con Gasto $0:** 6 registros (ROI no calculable en esos días)
+2. **Turnos con cruce de medianoche:** 4 registros (requieren tratamiento especial)
+3. **Eficiencia de cumplimiento < 1.0:** DiDi no contabilizó algunos pedidos
 
 ---
 
-## 📏 Rangos Esperados y Outliers
+## NOTAS TÉCNICAS
 
-### Criterios de Validación
-
-| Variable | Mín Esperado | Máx Esperado | Outlier si |
-|----------|--------------|--------------|------------|
-| `km_google_maps` | 10 km | 120 km | <5 o >150 |
-| `km_didi_app` | 15 km | 200 km | <10 o >250 |
-| `ratio_optimizacion` | 0.8x | 3.0x | <0.5 o >3.5 |
-| `pedidos_totales` | 3 | 25 | <2 o >30 |
-| `gasto_extra` | $0 | $40,000 | >$60,000 |
-| `salario_efectivo_hora` | $5,000 | $60,000 | <$3,000 o >$80,000 |
+- **Precisión:** Todas las métricas usan 2 decimales
+- **Moneda:** COP (Pesos Colombianos), **NO USD**
+- **Tratamiento de NULL:** Si `pedidos_fisicos = 0`, las métricas por pedido retornan `0` (no error)
+- **Codificación:** UTF-8
 
 ---
 
-## 🎯 Variables Clave para Hipótesis de Tesis
-
-### Hipótesis 1: Arbitraje Algorítmico
-**Variables:** `ratio_optimizacion`, `km_google_maps`, `km_didi_app`  
-**Resultado:** RO promedio = 1.71x (comprobado)
-
-### Hipótesis 2: Estrategia Cohetes Rentable
-**Variables:** `eficiencia_cohete_pct`, `utilidad_neta`  
-**Resultado:** +39% utilidad con ≥80% cohetes (comprobado)
-
-### Hipótesis 3: Rentabilidad Superior
-**Variables:** `salario_efectivo_hora`, salario_mínimo  
-**Resultado:** 2.44x salario mínimo (comprobado)
-
----
-
-## 📝 Notas Metodológicas
-
-### Precisión de Mediciones
-- **GPS (km_google_maps):** ±5% en zona urbana
-- **Tiempo:** ±1 minuto
-- **Dinero:** Exacto (de app DiDi)
-- **Pedidos:** Exacto (contador manual)
-
-### Datos Faltantes
-- **0 valores faltantes** en variables primarias
-- Todos los 24 días tienen datos completos
-
-### Transformaciones Aplicadas
-- Conversión de formato de KM (coma → punto decimal)
-- Cálculo de pedidos_normales (diferencia)
-- Todas las métricas derivadas calculadas automáticamente en SQL
-
----
-
-**Versión del Diccionario:** 1.0  
-**Última actualización:** Enero 2026  
-**Dataset:** 24 días operativos  
-**Total de variables documentadas:** 22 (9 primarias + 13 derivadas)
+**Última Actualización:** 2026-02-13  
+**Firmado:** Pipeline de Auditoría de Integridad v1.0
