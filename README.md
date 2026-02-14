@@ -156,8 +156,8 @@ pipeline_didi/
 
 ```bash
 # Clonar repositorio (si está en Git)
-git clone https://github.com/tu-usuario/pipeline_didi.git
-cd pipeline_didi
+git clone https://github.com/buckethead9/didi-algorithmic-arbitrage.git
+cd didi-algorithmic-arbitrage
 
 # Instalar dependencias
 pip install pandas numpy --break-system-packages
@@ -180,7 +180,7 @@ python3 main.py
 PIPELINE DE AUDITORÍA - ARBITRAJE ALGORÍTMICO DIDI FOOD
 ======================================================================
 
-📂 Directorio Base: /home/usuario/pipeline_didi
+📂 Directorio Base: /home/usuario/didi-algorithmic-arbitrage
 📥 Archivo Entrada: data/raw/didi_analisis_12_01.csv
 📤 Archivo Salida: data/processed/didi_procesado.csv
 
@@ -435,7 +435,7 @@ MIT License - Copyright (c) 2026
 Para preguntas, comentarios o colaboraciones:
 
 - **Email:** [felipecastro933@gmail.com] [ifcastrop@udistrital.edu.co]
-- **GitHub:** [Buckethead9]
+- **GitHub:** [https://github.com/buckethead9/didi-algorithmic-arbitrage]
 - **LinkedIn:** [https://www.linkedin.com/in/ivanfelipecastropinzon/]
 
 ---
