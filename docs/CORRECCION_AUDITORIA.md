@@ -2,7 +2,7 @@
 ## Ajuste de Métricas Financieras - Transparencia Radical
 
 **Fecha de Auditoría:** 2026-02-13  
-**Auditor:** Ingeniero de Datos Senior  
+**Auditor:** IVÁN FELIPE CASTRO PINZÓN  
 **Principio:** La Verdad por encima de la Armonía
 
 ---
